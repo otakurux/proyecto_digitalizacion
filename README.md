@@ -1,6 +1,6 @@
 # 🏛️ UMSA Digital - Sistema de Trámites Universitarios (MongoDB + Login + PDF)
 
-Sistema de digitalización de trámites universitarios de la **UMSA (Universidad Mayor de San Andrés)** implementado con arquitectura **MVC** usando Flask, Python, HTML, CSS, **MongoDB** (NoSQL), **sistema de autenticación** (login/registro) y **generación de PDFs** del récord académico.
+Propuesta para el Sistema de digitalización de trámites universitarios de la **UMSA (Universidad Mayor de San Andrés)** implementado con arquitectura **MVC** usando Flask, Python, HTML, CSS, **MongoDB** (NoSQL), **sistema de autenticación** (login) y **generación de PDFs** del récord académico.
 
 ---
 
@@ -30,9 +30,8 @@ Servicio **automático y gratuito**. El estudiante indica el motivo (beca, auxil
 
 | ID | Contraseña | Rol | Nombre |
 |----|-----------|-----|--------|
-| `EST-2022-001` | `estudiante123` | Estudiante | María Elena Flores Quispe |
-| `EST-2023-045` | `estudiante123` | Estudiante | Juan Carlos Mamani López |
-| `ADMIN-001` | `admin123` | Administrativo | Lic. Rosa María Quispe Callisaya |
+| `2000001` | `estudiante123` | Estudiante | Juan Carlos Mamani López |
+| `3000001` | `admin123` | Administrativo | Lic. Rosa María Quispe Callisaya |
 
 ---
 
@@ -125,10 +124,6 @@ pip install -r requirements.txt
 
 # 5. Inicializar datos de ejemplo en MongoDB
 python init_mongodb.py
-| ID        | Contraseña      | Rol            | Nombre                           |
-| ----------| --------------- | -------------- | -------------------------------- |
-| `2000002` | `estudiante123` | Estudiante     | Juan Carlos Mamani López         |
-| `3000001` | `admin123`      | Administrativo | Lic. Rosa María Quispe Callisaya |
 
 # 6. Ejecutar la aplicación
 python run.py
