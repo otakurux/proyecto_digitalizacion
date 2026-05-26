@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Verificación de Documento - UMSA Digital{% endblock %}
+
+{% block content %}
+<div class="verify-container">
+    <div class="verify-header">
+        <div class="verify-icon">🔍</div>
+        <h1>Verificación de Documento UMSA</h1>
+        <p>Portal público de validación de documentos digitales</p>
+    </div>
+
+    {% if documento %}
+    <div class="verify-result valid">
+        <div class="result-badge">✅ DOCUMENTO VÁLIDO</div>
+
+        <div class="verify-card">
+            <div class="verify-section">
+                <h3>📋 Información del Documento</h3>
+                <table class="verify-table">
+                    <tr><td><strong>ID Documento:</strong></td><td><code>{{ documento.id }}</code></td></tr>
+                    <tr><td><strong>Tipo:</strong></td><td>{{ documento.tipo.replace('_', ' ').title() }}</td></tr>
+                    <tr><td><strong>Estado:</strong></td><td><span class="status-badge">{{ documento.estado.upper() }}</span></td></tr>
+                    <tr><td><strong>Estudiante ID:</strong></td><td>{{ documento.estudiante_id }}</td></tr>
+                    <tr><td><strong>Fecha Emisión:</strong></td><td>{{ documento.fecha_emision or documento.created_at }}</td></tr>
+                </table>
+            </div>
+
+            {% if documento.tipo == 'solicitud_ambiente' %}
+            <div class="verify-section">
+                <h3>🏫 Detalles de Solicitud de Ambiente</h3>
+                <table class="verify-table">
+                    <tr><td><strong>Ambiente:</strong></td><td>{{ documento.ambiente_id }}</td></tr>
+                    <tr><td><strong>Fecha de Uso:</strong></td><td>{{ documento.fecha_uso }}</td></tr>
+                    <tr><td><strong>Horario:</strong></td><td>{{ documento.hora_inicio }} - {{ documento.hora_fin }}</td></tr>
+                    <tr><td><strong>Motivo:</strong></td><td>{{ documento.motivo }}</td></tr>
+                    <tr><td><strong>Asistentes:</strong></td><td>{{ documento.asistentes }}</td></tr>
+                    <tr><td><strong>Uso Confirmado:</strong></td><td>{{ 'Sí' if documento.uso_confirmado else 'No' }}</td></tr>
+                </table>
+            </div>
+            {% endif %}
+
+            {% if documento.tipo == 'record_academico' %}
+            <div class="verify-section">
+                <h3>📊 Récord Académico</h3>
+                <table class="verify-table">
+                    <tr><td><strong>Motivo de Emisión:</strong></td><td>{{ documento.motivo_solicitud }}</td></tr>
+                    <tr><td><strong>Promedio General:</strong></td><td><span class="highlight-big">{{ documento.promedio_general }}</span></td></tr>
+                    <tr><td><strong>Total Materias:</strong></td><td>{{ documento.materias | length }}</td></tr>
+                </table>
+
+                <h4>Materias Registradas:</h4>
+                <table class="materias-table">
+                    <thead>
+                        <tr><th>Sigla</th><th>Materia</th><th>Nota</th><th>Gestión</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for mat in documento.materias %}
+                        <tr>
+                            <td>{{ mat.sigla }}</td>
+                            <td>{{ mat.materia }}</td>
+                            <td class="nota">{{ mat.nota }}</td>
+                            <td>{{ mat.gestion }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+
+            <div class="verify-section sello-section">
+                <h3>🔐 Validación Digital UMSA</h3>
+                <div class="sello-box">
+                    <p><strong>Hash SHA-256:</strong></p>
+                    <code class="hash-full">{{ documento.sello_digital.hash }}</code>
+                    <p><strong>Timestamp:</strong> {{ documento.sello_digital.timestamp }}</p>
+                    <p><strong>Firma Institucional:</strong> {{ documento.sello_digital.firma_institucional or 'UMSA-VALIDADO' }}</p>
+                    <div class="qr-placeholder">
+                        <div class="qr-box">
+                            <span>📱 QR</span>
+                            <small>{{ documento.sello_digital.qr_url }}</small>
+                        </div>
+                        <p class="qr-text">Este documento puede ser verificado escaneando el código QR o visitando la URL oficial de la UMSA.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="verify-result invalid">
+        <div class="result-badge">❌ DOCUMENTO NO ENCONTRADO</div>
+        <p>El documento con ID <strong>{{ doc_id }}</strong> no existe en nuestros registros.</p>
+        <p>Esto puede significar que:</p>
+        <ul>
+            <li>El ID del documento es incorrecto</li>
+            <li>El documento fue revocado o anulado</li>
+            <li>El documento nunca fue emitido por la UMSA</li>
+        </ul>
+    </div>
+    {% endif %}
+
+    <div class="verify-footer">
+        <a href="{{ url_for('main.index') }}" class="btn-primary">← Volver al Inicio</a>
+    </div>
+</div>
+{% endblock %}

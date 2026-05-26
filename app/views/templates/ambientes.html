@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block title %}Solicitud de Ambientes - UMSA Digital{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🏫 Solicitud de Ambientes Universitarios</h1>
+    <p>Digitalización del trámite de cartas físicas con sello. Solicita, gestiona y valida ambientes con sello digital.</p>
+</div>
+
+<div class="two-column">
+    <div class="form-section">
+        <h2>📝 Nueva Solicitud</h2>
+        <form id="formAmbiente" class="digital-form">
+            <div class="form-group">
+                <label for="estudiante_id">ID Estudiante</label>
+                <input type="text" id="estudiante_id" name="estudiante_id" 
+                       value="{{ session.get('user_id', '') }}" 
+                       {% if session.get('rol') == 'estudiante' %}readonly{% endif %} required>
+            </div>
+
+            <div class="form-group">
+                <label for="ambiente_id">Ambiente</label>
+                <select id="ambiente_id" name="ambiente_id" required>
+                    <option value="">Seleccione un ambiente...</option>
+                    <option value="AUD-CENTRAL-01">Auditorio Central (300 pers.)</option>
+                    <option value="AULA-A-105">Aula A-105 (50 pers.)</option>
+                    <option value="LAB-INF-03">Laboratorio de Informática 3 (30 pers.)</option>
+                    <option value="SAL-JUNT-02">Sala de Juntas Decanato (20 pers.)</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="fecha_uso">Fecha de Uso</label>
+                    <input type="date" id="fecha_uso" name="fecha_uso" required>
+                </div>
+                <div class="form-group">
+                    <label for="asistentes">N° Asistentes</label>
+                    <input type="number" id="asistentes" name="asistentes" min="1" max="300" value="1" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="hora_inicio">Hora Inicio</label>
+                    <input type="time" id="hora_inicio" name="hora_inicio" required>
+                </div>
+                <div class="form-group">
+                    <label for="hora_fin">Hora Fin</label>
+                    <input type="time" id="hora_fin" name="hora_fin" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="motivo">Motivo de la Solicitud</label>
+                <textarea id="motivo" name="motivo" rows="3" placeholder="Describa el evento, reunión o actividad..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">📤 Enviar Solicitud</button>
+        </form>
+    </div>
+
+    <div class="list-section">
+        <h2>📋 Mis Solicitudes</h2>
+        <div id="listaAmbientes" class="card-list">
+            {% for sol in solicitudes %}
+            <div class="item-card status-{{ sol.estado }}">
+                <div class="item-header">
+                    <span class="item-id">{{ sol.id }}</span>
+                    <span class="badge status-{{ sol.estado }}">{{ sol.estado.upper() }}</span>
+                </div>
+                <div class="item-body">
+                    <p><strong>Estudiante:</strong> {{ sol.estudiante_id }}</p>
+                    <p><strong>Ambiente:</strong> {{ sol.ambiente_id }}</p>
+                    <p><strong>Fecha:</strong> {{ sol.fecha_uso }} | {{ sol.hora_inicio }} - {{ sol.hora_fin }}</p>
+                    <p><strong>Motivo:</strong> {{ sol.motivo }}</p>
+                    <p><strong>Asistentes:</strong> {{ sol.asistentes }}</p>
+                </div>
+                <div class="item-footer">
+                    <div class="sello-info">
+                        <span class="sello-label">🔐 Sello Digital:</span>
+                        <code class="hash-short">{{ sol.sello_digital.hash[:16] }}...</code>
+                    </div>
+                    <div class="item-actions">
+                        <a href="/verificar/{{ sol.id }}" target="_blank" class="btn-small">🔍 Verificar</a>
+
+                        {% if es_admin %}
+                            <button onclick="aprobarSolicitud('{{ sol.id }}')" class="btn-small btn-success" {% if sol.estado != 'pendiente' %}disabled{% endif %}>✅ Aprobar</button>
+                        {% endif %}
+
+                        <button onclick="eliminarSolicitud('{{ sol.id }}')" class="btn-small btn-danger">🗑️ Eliminar</button>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>📭 No tienes solicitudes registradas aún.</p>
+                <p>Complete el formulario para crear tu primera solicitud.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('formAmbiente').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = {
+        estudiante_id: document.getElementById('estudiante_id').value,
+        ambiente_id: document.getElementById('ambiente_id').value,
+        fecha_uso: document.getElementById('fecha_uso').value,
+        hora_inicio: document.getElementById('hora_inicio').value,
+        hora_fin: document.getElementById('hora_fin').value,
+        motivo: document.getElementById('motivo').value,
+        asistentes: parseInt(document.getElementById('asistentes').value)
+    };
+
+    try {
+        const response = await fetch('/ambientes/api/crear', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(formData)
+        });
+        const result = await response.json();
+        if (result.success) {
+            alert('✅ Solicitud creada exitosamente. ID: ' + result.data.id);
+            location.reload();
+        } else {
+            alert('❌ Error: ' + result.error);
+        }
+    } catch (error) {
+        alert('❌ Error de conexión');
+    }
+});
+
+async function aprobarSolicitud(id) {
+    try {
+        const response = await fetch('/ambientes/api/actualizar/' + id, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({estado: 'aprobada'})
+        });
+        const result = await response.json();
+        if (result.success) {
+            alert('✅ Solicitud aprobada. Sello digital validado.');
+            location.reload();
+        }
+    } catch (error) {
+        alert('❌ Error al aprobar');
+    }
+}
+
+async function eliminarSolicitud(id) {
+    if (!confirm('¿Eliminar solicitud ' + id + '?')) return;
+    try {
+        const response = await fetch('/ambientes/api/eliminar/' + id, {method: 'DELETE'});
+        const result = await response.json();
+        if (result.success) location.reload();
+    } catch (error) {
+        alert('❌ Error al eliminar');
+    }
+}
+</script>
+{% endblock %}

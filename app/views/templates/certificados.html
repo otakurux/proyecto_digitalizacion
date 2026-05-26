@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %}Certificados de Notas - UMSA Digital{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>📄 Emisión de Certificados de Notas</h1>
+    <p>Servicio automático y gratuito. Seleccione el tipo de certificado y el sistema lo genera 
+    con sello digital institucional automático (sin intervención de Kardex).</p>
+</div>
+
+<div class="two-column">
+    <div class="form-section">
+        <h2>🎓 Emitir Nuevo Certificado</h2>
+        <form id="formCertificado" class="digital-form">
+            <div class="form-group">
+                <label for="estudiante_id">ID Estudiante</label>
+                <input type="text" id="estudiante_id" name="estudiante_id" 
+                       value="{{ session.get('user_id', '') }}" 
+                       {% if session.get('rol') == 'estudiante' %}readonly{% endif %} required>
+            </div>
+
+            <div class="form-group">
+                <label for="tipo_certificado">Tipo de Certificado</label>
+                <select id="tipo_certificado" name="tipo_certificado" required>
+                    <option value="record">📊 Récord Académico — Solo materias aprobadas</option>
+                    <option value="historial">📚 Historial Académico — Todas las materias cursadas</option>
+                </select>
+                <small class="form-hint">
+                    <strong>Récord:</strong> solo incluye materias con observación "APROBADO".<br>
+                    <strong>Historial:</strong> incluye aprobadas, reprobadas y abandonos.
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label for="motivo">Motivo de Solicitud (obligatorio)</label>
+                <select id="motivo" name="motivo" required>
+                    <option value="">Seleccione motivo...</option>
+                    <option value="Beca de excelencia académica">🏆 Beca de excelencia académica</option>
+                    <option value="Postulación a auxiliatura">👨‍🏫 Postulación a auxiliatura</option>
+                    <option value="Trámite externo (banco, embajada)">🏦 Trámite externo (banco, embajada)</option>
+                    <option value="Beca de ayuda económica">💰 Beca de ayuda económica</option>
+                    <option value="Intercambio estudiantil">🌍 Intercambio estudiantil</option>
+                    <option value="Otro">📝 Otro (especificar en observaciones)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="observaciones">Observaciones adicionales</label>
+                <textarea id="observaciones" name="observaciones" rows="2" placeholder="Detalles adicionales si el motivo es 'Otro'..."></textarea>
+            </div>
+
+            <div class="info-box">
+                <p>ℹ️ <strong>Importante:</strong> El certificado se genera automáticamente con:</p>
+                <ul>
+                    <li>📊 Récord académico completo del estudiante (según tipo seleccionado)</li>
+                    <li>🔐 Sello digital institucional (hash SHA-256)</li>
+                    <li>📱 Código QR para verificación pública</li>
+                    <li>⏱️ Timestamp de emisión</li>
+                </ul>
+            </div>
+
+            <button type="submit" class="btn-submit">📜 Generar Certificado Digital</button>
+        </form>
+    </div>
+
+    <div class="list-section">
+        <h2>📜 Certificados Emitidos</h2>
+        <div id="listaCertificados" class="card-list">
+            {% for cert in certificados %}
+            <div class="item-card status-emitido">
+                <div class="item-header">
+                    <span class="item-id">{{ cert.id }}</span>
+                    <span class="badge status-emitido">EMITIDO</span>
+                </div>
+                <div class="item-body">
+                    <p><strong>Estudiante:</strong> {{ cert.estudiante_id }}</p>
+                    <p><strong>Tipo:</strong> 
+                        {% if cert.tipo_certificado == 'record' %}
+                            <span class="tag tag-record">📊 Récord Académico</span>
+                        {% else %}
+                            <span class="tag tag-historial">📚 Historial Académico</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>Motivo:</strong> {{ cert.motivo_solicitud }}</p>
+                    <p><strong>Fecha:</strong> {{ cert.fecha_emision }}</p>
+                    <p><strong>Promedio:</strong> <span class="highlight">{{ cert.promedio_general }}</span></p>
+                    <p><strong>Materias:</strong> {{ cert.materias | length }} registradas</p>
+                </div>
+                <div class="item-footer">
+                    <div class="sello-info">
+                        <span class="sello-label">🔐 Sello Digital UMSA:</span>
+                        <code class="hash-short">{{ cert.sello_digital.hash[:16] }}...</code>
+                    </div>
+                    <div class="item-actions">
+                        <a href="/verificar/{{ cert.id }}" target="_blank" class="btn-small">🔍 Verificar QR</a>
+                        <a href="{{ url_for('certificados.descargar_pdf', cert_id=cert.id) }}" class="btn-small btn-primary">⬇️ Descargar PDF</a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>📭 No hay certificados emitidos aún.</p>
+                <p>Seleccione un estudiante, tipo y motivo para generar el primero.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('formCertificado').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = {
+        estudiante_id: document.getElementById('estudiante_id').value,
+        motivo: document.getElementById('motivo').value,
+        tipo_certificado: document.getElementById('tipo_certificado').value
+    };
+
+    try {
+        const response = await fetch('/certificados/api/emitir', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(formData)
+        });
+        const result = await response.json();
+        if (result.success) {
+            const tipoLabel = result.data.tipo_certificado === 'record' ? 'Récord Académico' : 'Historial Académico';
+            alert('✅ Certificado emitido exitosamente.\nTipo: ' + tipoLabel + '\nID: ' + result.data.id + '\nMaterias: ' + result.data.materias.length + '\nPromedio: ' + result.data.promedio_general);
+            location.reload();
+        } else {
+            alert('❌ Error: ' + result.error);
+        }
+    } catch (error) {
+        alert('❌ Error de conexión');
+    }
+});
+</script>
+{% endblock %}

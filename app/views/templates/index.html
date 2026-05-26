@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- SECCIÓN HERO -->
+<div class="hero-presentacion">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1>Universidad Mayor de San Andrés</h1>
+        <h2>Facultad de Ciencias Puras y Naturales</h2>
+        <p class="hero-subtitle">Sistema de Digitalización de Trámites Universitarios</p>
+        <div class="hero-actions">
+            {% if not session.get('user_id') %}
+                <a href="{{ url_for('auth.login') }}" class="btn-hero btn-primary">Ingresar al Sistema</a>
+            {% else %}
+                <a href="{% if session.get('rol') == 'estudiante' %}{{ url_for('certificados.listar') }}{% else %}{{ url_for('ambientes.listar') }}{% endif %}" class="btn-hero btn-primary">Ir a Mis Trámites</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- SECCIÓN MISIÓN Y VISIÓN -->
+<div class="section-mv">
+    <div class="mv-grid">
+        <div class="mv-card mision">
+            <div class="mv-icon">🎯</div>
+            <h3>Misión</h3>
+            <p>Modernizar los procesos administrativos de la UMSA mediante la digitalización de trámites universitarios, 
+            garantizando un servicio ágil, seguro y accesible para toda la comunidad estudiantil, 
+            eliminando barreras burocráticas y promoviendo la eficiencia institucional.</p>
+        </div>
+        <div class="mv-card vision">
+            <div class="mv-icon">🔭</div>
+            <h3>Visión</h3>
+            <p>Ser la universidad líder en Bolivia en transformación digital educativa, 
+            donde todos los trámites académicos sean gestionados de manera 100% digital, 
+            con validación criptográfica y trazabilidad completa, sirviendo de modelo para otras instituciones del país.</p>
+        </div>
+    </div>
+</div>
+
+<!-- SECCIÓN ¿POR QUÉ DIGITALIZAR? -->
+<div class="section-porque">
+    <div class="section-header">
+        <h2>¿Por qué Digitalizar?</h2>
+        <p>La transformación digital de los trámites universitarios responde a las necesidades actuales de nuestra comunidad</p>
+    </div>
+    <div class="porque-grid">
+        <div class="porque-card">
+            <div class="porque-num">01</div>
+            <h4>Reduce Tiempos de Espera</h4>
+            <p>Olvídate de las largas colas en Kardex y las oficinas de ambientes. 
+            Solicita y recibe tus documentos en minutos, no en días.</p>
+        </div>
+        <div class="porque-card">
+            <div class="porque-num">02</div>
+            <h4>Elimina Papeleo Físico</h4>
+            <p>Adiós a las cartas con sello de goma y los trámites en papel. 
+            Todo se gestiona digitalmente con validez oficial.</p>
+        </div>
+        <div class="porque-card">
+            <div class="porque-num">03</div>
+            <h4>Disponible 24/7</h4>
+            <p>Accede a tus trámites en cualquier momento, desde cualquier dispositivo. 
+            No dependas del horario de oficina.</p>
+        </div>
+        <div class="porque-card">
+            <div class="porque-num">04</div>
+            <h4>Validación Segura</h4>
+            <p>Cada documento cuenta con sello digital (hash SHA-256) y código QR 
+            para verificar su autenticidad ante cualquier institución.</p>
+        </div>
+    </div>
+</div>
+
+<!-- SECCIÓN BENEFICIOS -->
+<div class="section-beneficios">
+    <div class="section-header light">
+        <h2>Beneficios para la Comunidad UMSA</h2>
+    </div>
+    <div class="beneficios-grid">
+        <div class="beneficio-item">
+            <span class="beneficio-icon">🎓</span>
+            <h4>Para Estudiantes</h4>
+            <ul>
+                <li>Solicitud de ambientes desde cualquier lugar</li>
+                <li>Emisión inmediata de certificados de notas</li>
+                <li>Descarga de récord académico en PDF oficial</li>
+                <li>Verificación digital para becas y auxiliaturas</li>
+            </ul>
+        </div>
+        <div class="beneficio-item">
+            <span class="beneficio-icon">👨‍🏫</span>
+            <h4>Para Administrativos</h4>
+            <ul>
+                <li>Gestión centralizada de solicitudes</li>
+                <li>Aprobaciones con un solo clic</li>
+                <li>Reducción de carga operativa</li>
+                <li>Trazabilidad completa de cada trámite</li>
+            </ul>
+        </div>
+        <div class="beneficio-item">
+            <span class="beneficio-icon">🏛️</span>
+            <h4>Para la Institución</h4>
+            <ul>
+                <li>Reducción de costos en papelería</li>
+                <li>Menor impacto ambiental</li>
+                <li>Transparencia en procesos</li>
+                <li>Modernización institucional</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- SECCIÓN TRÁMITES DISPONIBLES -->
+<div class="section-tramites">
+    <div class="section-header">
+        <h2>Trámites Digitalizados</h2>
+        <p>Gestiona estos trámites de forma rápida y segura</p>
+    </div>
+    <div class="tramites-presentacion">
+        <div class="tramite-card-presentacion">
+            <div class="tramite-icon-big">🏫</div>
+            <h3>Solicitud de Ambientes</h3>
+            <p>Reserva auditorios, aulas y laboratorios para tus eventos académicos. 
+            Recibe aprobación digital con comprobante QR.</p>
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('ambientes.listar') }}" class="btn-tramite">Solicitar Ambiente</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn-tramite">Ingresar para Solicitar</a>
+            {% endif %}
+        </div>
+        <div class="tramite-card-presentacion">
+            <div class="tramite-icon-big">📄</div>
+            <h3>Certificado de Notas</h3>
+            <p>Obtén tu récord académico oficial en PDF con sello digital UMSA. 
+            Válido para becas, auxiliaturas y trámites externos.</p>
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('certificados.listar') }}" class="btn-tramite">Emitir Certificado</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn-tramite">Ingresar para Emitir</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- SECCIÓN ANIMACIÓN UNITY -->
+<div class="section-animacion">
+    <div class="section-header light">
+        <h2>🎮 Experiencia Interactiva</h2>
+        <p>Explora nuestra animación en 3D desarrollada en Unity</p>
+    </div>
+    <div class="animacion-content">
+        <div class="animacion-info">
+            <h3>Descubre la UMSA en Realidad Virtual</h3>
+            <p>Sumérgete en una experiencia interactiva donde podrás visualizar 
+            el campus universitario, los ambientes disponibles y el flujo de trámites 
+            de forma dinámica y entretenida.</p>
+            <a href="/animacion/" target="_blank" class="btn-animacion">🎬 Ver Animación Unity WebGL</a>
+        </div>
+        <div class="animacion-preview">
+            <div class="preview-box">
+                <span class="preview-icon">🎮</span>
+                <p>Animación 3D Interactiva</p>
+                <small>Unity WebGL | Navegador compatible</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER INSTITUCIONAL -->
+<div class="footer-institucional">
+    <p>© 2026 Universidad Mayor de San Andrés - Facultad de Ciencias Puras y Naturales</p>
+    <p>Carrera de Informática | La Paz - Bolivia</p>
+</div>
+{% endblock %}

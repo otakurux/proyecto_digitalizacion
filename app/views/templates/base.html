@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}UMSA Digital{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="logo">🏛️</span>
+            <span class="brand-text">UMSA Digital</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('main.index') }}">Inicio</a></li>
+
+            {% if session.get('user_id') %}
+                {% if session.get('rol') == 'estudiante' %}
+                    <li><a href="{{ url_for('ambientes.listar') }}">Mis Ambientes</a></li>
+                    <li><a href="{{ url_for('certificados.listar') }}">Mis Certificados</a></li>
+                {% elif session.get('rol') == 'administrativo' %}
+                    <li><a href="{{ url_for('ambientes.listar') }}">Gestionar Ambientes</a></li>
+                    <li><a href="{{ url_for('certificados.listar') }}">Certificados Emitidos</a></li>
+                {% endif %}
+
+                <li class="user-menu">
+                    <span class="user-badge">👤 {{ session.get('nombre', 'Usuario') }}</span>
+                    <span class="rol-badge">{{ session.get('rol', '').upper() }}</span>
+                    <a href="{{ url_for('auth.logout') }}" class="btn-logout">🚪 Salir</a>
+                </li>
+            {% else %}
+                <li><a href="{{ url_for('auth.login') }}" class="btn-login">🔐 Ingresar</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-container">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 Universidad Mayor de San Andrés - Facultad de Ciencias Puras y Naturales</p>
+        <p class="footer-sub">La Paz - Bolivia | Carrera de Informática</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
