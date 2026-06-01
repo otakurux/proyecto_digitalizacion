@@ -1379,6 +1379,157 @@ body {
 }
 
 /* ============================================
+   SECCIÓN MODELO 3D (Visor Three.js)
+   ============================================ */
+
+.section-modelo3d {
+    background: linear-gradient(135deg, #1a202c 0%, #2d3748 50%, #1a202c 100%);
+    padding: 4rem 2rem;
+    margin: 0 -2rem;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Decoración sutil de fondo para diferenciarlo de Unity */
+.section-modelo3d::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(56, 161, 105, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.section-modelo3d::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -5%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(49, 130, 206, 0.12) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+/* Reutiliza .animacion-content pero con ajustes */
+.section-modelo3d .animacion-content {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 3rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+.section-modelo3d .animacion-info h3 {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    color: #68d391;  /* Verde diferente al dorado de Unity */
+}
+
+.section-modelo3d .animacion-info p {
+    color: rgba(255,255,255,0.85);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+}
+
+/* Botón específico para el modelo 3D */
+.section-modelo3d .btn-animacion {
+    display: inline-block;
+    background: linear-gradient(135deg, #38a169 0%, #48bb78 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(56, 161, 105, 0.3);
+}
+
+.section-modelo3d .btn-animacion:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 30px rgba(56, 161, 105, 0.5);
+    background: linear-gradient(135deg, #2f855a 0%, #38a169 100%);
+}
+
+/* Preview box con estilo propio */
+.section-modelo3d .preview-box {
+    background: rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    text-align: center;
+    border: 2px dashed rgba(104, 211, 145, 0.4);
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+}
+
+.section-modelo3d .preview-box:hover {
+    border-color: rgba(104, 211, 145, 0.8);
+    background: rgba(255,255,255,0.12);
+    transform: scale(1.02);
+}
+
+.section-modelo3d .preview-icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+}
+
+.section-modelo3d .preview-box p {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+.section-modelo3d .preview-box small {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.8rem;
+}
+
+/* Etiqueta de tecnología */
+.tech-tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.8);
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
+    font-family: 'Courier New', monospace;
+}
+
+/* ============================================
+   RESPONSIVE MODELO 3D
+   ============================================ */
+
+@media (max-width: 768px) {
+    .section-modelo3d .animacion-content {
+        grid-template-columns: 1fr;
+    }
+
+    .section-modelo3d {
+        padding: 3rem 1.5rem;
+    }
+
+    .section-modelo3d .preview-box {
+        padding: 2rem 1.5rem;
+    }
+}
+
+/* ============================================
    FOOTER INSTITUCIONAL
    ============================================ */
 

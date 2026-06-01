@@ -12,25 +12,19 @@ def create_app():
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)  # Solo mostrar errores, no INFO
 
-    # Ruta para servir la animación Unity WebGL
-    animacion_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'animacion_webGL')
-
-    @app.route('/animacion/')
-    @app.route('/animacion/<path:filename>')
-    def animacion(filename=None):
-        if filename is None:
-            filename = 'index.html'
-        return send_from_directory(animacion_dir, filename)
-
     # Registrar blueprints
     from app.controllers.auth_controller import auth_bp
     from app.controllers.main_controller import main_bp
     from app.controllers.ambiente_controller import ambiente_bp
     from app.controllers.certificado_controller import certificado_bp
-
+    from app.controllers.modelo3d_controller import modelo3d_bp
+    from app.controllers.animacion_controller import animacion_bp
+    
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(main_bp)
     app.register_blueprint(ambiente_bp, url_prefix='/ambientes')
     app.register_blueprint(certificado_bp, url_prefix='/certificados')
+    app.register_blueprint(modelo3d_bp, url_prefix='/visor3d')
+    app.register_blueprint(animacion_bp, url_prefix='/animacion')
 
     return app
