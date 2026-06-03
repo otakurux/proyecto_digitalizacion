@@ -9,7 +9,11 @@ class MongoModel:
     def __init__(self, collection_name, db_name='umsa_digital'):
         # Conexión a MongoDB (local por defecto, puerto 27017)
         # Se puede cambiar la URI via variable de entorno MONGO_URI
-        mongo_uri = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/')
+        mongo_uri = (
+            "mongodb+srv://otakurux:4ZcYh8NBCSqnMMwG"
+            "@cluster0.ja8f1ub.mongodb.net/"
+            "?retryWrites=true&w=majority&appName=Cluster0"
+        )
         self.client = MongoClient(mongo_uri)
         self.db = self.client[db_name]
         self.collection = self.db[collection_name]
