@@ -40,10 +40,8 @@ Servicio **automático y gratuito**. El estudiante indica el motivo (beca, auxil
 ```
 umsa_digital_mvc/
 ├── run.py                          # Punto de entrada
-├── init_mongodb.py                 # Script de inicialización de MongoDB
 ├── requirements.txt                # Flask + pymongo + bcrypt + reportlab
 ├── README.md                       # Documentación
-├── DIAGRAMA_FLUJO_UMSA_DIGITAL.png # Diagrama de flujo
 │
 ├── app/
 │   ├── __init__.py                 # Inicialización Flask + Blueprints

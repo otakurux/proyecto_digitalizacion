@@ -48,7 +48,7 @@ def init_mongodb():
     usuarios_data = [
         {
             "id": "2000001",
-            "nombre": "MAMANI TRUJILLO DEIVID ENRIQUE",
+            "nombre": "JUAN CARLOS MAMANI LÓPEZ",
             "password_hash": hash_password("estudiante123"),
             "rol": "estudiante",
             "carrera": "Informática",
@@ -90,7 +90,7 @@ def init_mongodb():
     estudiantes_data = [
         {
             "id": "2000001",
-            "nombre": "MAMANI TRUJILLO DEIVID ENRIQUE",
+            "nombre": "JUAN CARLOS MAMANI LÓPEZ",
             "carrera": "INFORMÁTICA",
             "ci": "7235715-1V",
             "reg_univ": "1845286",
