@@ -138,6 +138,10 @@ python init_mongodb.py
 python run.py
 ```
 
+### despliegue del proyecto
+
+#https://proyecto-digitalizacion-p0dn.onrender.com/
+
 ---
 
 ## 📡 API Endpoints
